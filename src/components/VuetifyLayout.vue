@@ -2,9 +2,9 @@
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawer" app>
       <v-list-item>
-        <v-list-item-content>
+        <v-list-item-content class="pa-5">
           <v-list-item-title class="title">
-            Список пользователей
+             Пользователи
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
@@ -26,41 +26,46 @@
     </v-app-bar>
 
     <v-main>
-<!--      <Join v-if="!IS_AUTH"/>-->
       <Room/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-// import Join from "@/components/Join";
 import Room from "@/components/Room";
+import socket from "@/socket";
 import { mapGetters } from 'vuex';
 
 export default {
   components: {
-    Room,
-    // Join
+    Room
   },
 
   created() {
+    //Не позволяем войти не авторизованному пользователю; А также - редиректим при обновлении страницы;
+    if(!this.IS_AUTH) this.$router.push({name: 'join'});
+
+    socket.on('JOINED', (data) => {
+      this.$store.dispatch({
+        type: 'SET_USERS',
+        payload: data
+      });
+    });
+    
+    socket.on('disconnect', () => {
+      console.log();
+/*       this.$store.dispatch({
+        type: 'SET_USERS',
+        payload: data
+      }); */
+    });
 
   },
 
-  data: () => ({
-    drawer: null,
-    userName: '',
-    leave: '',
-  }),
+  data: () => ({drawer: null}),
 
   computed: {
-    ...mapGetters([
-      'IS_AUTH',
-      'USERS'
-    ])
-  },
-
-  mounted() {
+    ...mapGetters(['IS_AUTH','USERS'])
   }
 }
 </script>

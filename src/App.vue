@@ -9,6 +9,9 @@
 </script>
 
 <style>
+  html {
+    overflow: auto !important;
+  }
   * {
     padding: 0;
     margin: 0;

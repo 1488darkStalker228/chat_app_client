@@ -3,7 +3,7 @@
     <div class="room__messages pa-6" >
       <ul class="room__list">
         <li v-for="(message, index) of messages" :key="index">
-          {{message.message}}
+          {{message.userName}}: {{message.message}}
         </li>
       </ul>
     </div>
@@ -26,54 +26,44 @@
 
 <script>
   import socket from "@/socket";
+  import { mapGetters } from 'vuex';
 
   export default {
     name: "Room",
 
     created() {
       socket.on('chat-message', (data) => {
-
         this.messages.push({
           message: data.message,
-          userName: data.userName,
+          userName: this.USERS[this.USERS.length - 1].userName
         });
       });
-
-      socket.on('JOINED', (data) => {
-        this.users.push(data);
-
-        this.$store.dispatch({
-          type: 'SET_USERS',
-          payload: data
-        });
-      });
-
-      // socket.on('LEAVE', (data) => {
-      //   this.leave = data;
-      // });
     },
 
     data() {
       return {
         messages: [],
-        users: [],
-        message: '',
-        leave: ''
+        message: ''
       }
     },
 
     methods: {
       sendMessage() {
         if (this.message) {
-          this.messages.push({message: this.message});
-
-          socket.emit('chat-message', {
+          this.messages.push({
             message: this.message,
+            userName: this.USERS[this.USERS.length - 1].userName
           });
+
+          socket.emit('chat-message', ...this.messages);
 
           this.message = '';
         }
       }
+    },
+
+    computed: {
+      ...mapGetters(['USERS'])
     }
   }
 </script>
@@ -88,11 +78,20 @@
     &__messages {
       height: 80vh;
       border: 1px solid;
+      border-radius: 7px;
       overflow: auto;
     }
 
     &__list {
       padding: 0;
+      li {
+        background: bisque;
+        padding: 8px;
+        border-radius: 7px;
+      }
+      li:nth-child(n + 2) {
+        margin-top: 8px;
+      }
     }
 
     &__message-input {

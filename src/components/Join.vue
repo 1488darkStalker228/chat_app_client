@@ -30,37 +30,35 @@
             'Content-Type': 'application/json'
           }
         })
-        .then(this.onLogin);
+        .then(this.onLogin)
+        .catch(err => console.err(err));
       },
 
       onLogin() {
-        this.$store.dispatch({
-          type: 'IS_AUTH',
-          payload: true
-        });
-
+        this.$store.dispatch({type: 'IS_AUTH', value: true});
+        this.$router.push({name: 'room'});
         socket.emit('JOINED', {
+          id:socket.id,
           userName: this.generateUserName()
         });
-
-        this.$router.push({path: '/test'})
       }
     }
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .join {
-    padding: 8px;
-  }
-  .join button {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 35px;
-    background: antiquewhite;
-    border-radius: 22px;
     padding: 8px;
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 35px;
+      background: antiquewhite;
+      border-radius: 22px;
+      padding: 8px;
+    }
   }
-
 </style>

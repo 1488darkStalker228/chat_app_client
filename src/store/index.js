@@ -6,13 +6,12 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     isAuth: false,
-    users: [],
-    messages: []
+    users: null
   },
 
   actions: {
     IS_AUTH({ commit }, payload) {
-      commit('IS_AUTH_COMPLETE', payload.payload);
+      commit('IS_AUTH_COMPLETE', payload.value);
     },
 
     SET_USERS({ commit }, payload) {
@@ -26,7 +25,7 @@ export default new Vuex.Store({
     },
 
     SET_USER_TO_STATE(state, payload) {
-      payload.forEach(item => state.users.push(item));
+      state.users = payload;
     }
   },
 

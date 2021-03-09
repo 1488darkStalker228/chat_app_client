@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Test from "@/components/Test";
+import VuetifyLayout from "@/components/VuetifyLayout";
 import Join from "@/components/Join";
 
 Vue.use(VueRouter);
@@ -8,11 +8,13 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
+    name: 'join',
     component: Join
   },
   {
-    path: '/test',
-    component: Test
+    path: '/room',
+    name: 'room',
+    component: VuetifyLayout
   }
 ];
 
