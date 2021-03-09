@@ -42,23 +42,11 @@ export default {
   },
 
   created() {
-    //Не позволяем войти не авторизованному пользователю; А также - редиректим при обновлении страницы;
     if(!this.IS_AUTH) this.$router.push({name: 'join'});
 
-    socket.on('JOINED', (data) => {
-      this.$store.dispatch({
-        type: 'SET_USERS',
-        payload: data
-      });
-    });
-    /*
-    socket.on('disconnect', () => {
-      this.$store.dispatch({
-        type: 'SET_USERS',
-        payload: data
-      });
-    });
-    */
+    socket.on('JOINED', (data) => this.$store.dispatch({type: 'SET_USERS', payload: data}));
+
+    socket.on('LEAVE', (data) => this.$store.dispatch({type: 'SET_USERS', payload: data}));
   },
 
   data: () => ({drawer: null}),

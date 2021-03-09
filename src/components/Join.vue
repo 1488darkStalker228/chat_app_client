@@ -25,22 +25,18 @@
       onEnter() {
         fetch('http://localhost:3000', {
           method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+          headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
         })
         .then(this.onLogin)
         .catch(err => console.err(err));
       },
 
       onLogin() {
+        const userName = this.generateUserName();
         this.$store.dispatch({type: 'IS_AUTH', value: true});
+        this.$store.dispatch({type: 'GET_USER_NAME', payload: userName});
         this.$router.push({name: 'room'});
-        socket.emit('JOINED', {
-          id:socket.id,
-          userName: this.generateUserName()
-        });
+        socket.emit('JOINED', {id:socket.id, userName});
       }
     }
   }

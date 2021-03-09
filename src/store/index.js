@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     isAuth: false,
-    users: null
+    users: null,
+    userName: null
   },
 
   actions: {
@@ -16,6 +17,10 @@ export default new Vuex.Store({
 
     SET_USERS({ commit }, payload) {
       commit('SET_USER_TO_STATE', payload.payload);
+    },
+
+    GET_USER_NAME({ commit }, payload) {
+      commit('SET_USER_NAME', payload.payload);
     }
   },
 
@@ -26,11 +31,16 @@ export default new Vuex.Store({
 
     SET_USER_TO_STATE(state, payload) {
       state.users = payload;
+    },
+
+    SET_USER_NAME(state, payload) {
+      state.userName = payload;
     }
   },
 
   getters: {
     IS_AUTH: state => state.isAuth,
-    USERS: state => state.users
+    USERS: state => state.users,
+    USER_NAME: state => state.userName
   }
 });

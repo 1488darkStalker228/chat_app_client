@@ -32,38 +32,24 @@
     name: "Room",
 
     created() {
-      socket.on('chat-message', (data) => {
-        this.messages.push({
-          message: data.message,
-          userName: this.USERS[this.USERS.length - 1].userName
-        });
-      });
+      socket.on('CHAT_MESSAGE', (data) => this.messages.push(data));
     },
 
     data() {
-      return {
-        messages: [],
-        message: ''
-      }
+      return {messages: [], message: ''}
     },
 
     methods: {
       sendMessage() {
         if (this.message) {
-          this.messages.push({
-            message: this.message,
-            userName: this.USERS[this.USERS.length - 1].userName
-          });
-
-          socket.emit('chat-message', ...this.messages);
-
+          socket.emit('CHAT_MESSAGE', {message: this.message, userName: this.USER_NAME});
           this.message = '';
         }
       }
     },
 
     computed: {
-      ...mapGetters(['USERS'])
+      ...mapGetters(['USERS', 'USER_NAME'])
     }
   }
 </script>
@@ -85,7 +71,7 @@
     &__list {
       padding: 0;
       li {
-        background: bisque;
+        background: antiquewhite;
         padding: 8px;
         border-radius: 7px;
       }
