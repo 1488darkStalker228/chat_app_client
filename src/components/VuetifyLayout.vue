@@ -51,15 +51,14 @@ export default {
         payload: data
       });
     });
-    
+    /*
     socket.on('disconnect', () => {
-      console.log();
-/*       this.$store.dispatch({
+      this.$store.dispatch({
         type: 'SET_USERS',
         payload: data
-      }); */
+      });
     });
-
+    */
   },
 
   data: () => ({drawer: null}),
