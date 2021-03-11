@@ -1,0 +1,162 @@
+.room {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &__messages {
+    position: relative;
+    height: 76vh;
+    margin-bottom: 16px;
+    border: 1px solid;
+    border-radius: 7px;
+    overflow-y: scroll;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 0;
+    li {
+      max-width: 540px;
+      word-wrap: break-word;
+      line-height: 24px;
+      position: relative;
+      padding: 10px 20px;
+      border-radius: 25px;
+      &:before, &:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        height: 25px;
+      }
+    }
+    li:nth-child(n + 2) {
+      margin-top: 12px;
+    }
+  }
+
+  .from-me {
+    color: white;
+    background: #0B93F6;
+    align-self: flex-end;
+    &:before {
+      right: -7px;
+      width: 20px;
+      background-color: #0B93F6;
+      border-bottom-left-radius: 16px 14px;
+    }
+    &:after {
+      right: -26px;
+      width: 26px;
+      background-color: white;
+      border-bottom-left-radius: 10px;
+    }
+  }
+
+  .from-them {
+    background: #E5E5EA;
+    color: black;
+    align-self: flex-start;
+
+    &:before {
+      left: -7px;
+      width: 20px;
+      background-color: #E5E5EA;
+      border-bottom-right-radius: 16px 14px;
+    }
+
+    &:after {
+      left: -26px;
+      width: 26px;
+      background-color: white;
+      border-bottom-right-radius: 10px;
+    }
+  }
+
+  &__img {
+    max-width: 500px;
+    max-height: 300px;
+  }
+
+  &__message-input {
+    flex-grow: 1;
+  }
+
+  &__images-previews {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 40px;
+
+    &__item {
+      position: relative;
+
+      img {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 0 6px rgba(0,0,0,0.26);
+      }
+
+      &:not(:nth-child(1)) {
+        margin-left: 10px;
+      }
+
+      &__remove-btn {
+        position: absolute;
+        right: -2px;
+        top: -2px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 0 6px rgba(0,0,0,0.26);
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__input-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 0;
+  }
+
+  &__input-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__scroll-bottom {
+    position: absolute;
+    right: 45px;
+    bottom: 182px;
+    svg {
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+    }
+  }
+
+  .scroll-style {
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(153, 194, 248, 0.63);
+      border-radius: 15px;
+    }
+  }
+}

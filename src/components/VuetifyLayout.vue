@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import Room from "@/components/Room";
+import Room from "@/components/Room/Room.vue";
 import socket from "@/socket";
 import { mapGetters } from 'vuex';
 
@@ -51,9 +51,7 @@ export default {
     socket.on('LEAVE', (data) => this.$store.commit({type: 'SET_USERS_TO_STATE', payload: data}));
   },
 
-  data: () => ({
-    drawer: null
-  }),
+  data: () => ({drawer: null}),
 
   methods: {
     generateUserName() {
