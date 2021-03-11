@@ -1,6 +1,6 @@
 <template>
   <div class="room pa-3">
-    <div class="room__messages pa-7 scroll-style" ref="messageArea">
+    <div class="room__messages pa-7 scroll-style" ref="messageArea" @scroll="test">
       <ul class="room__list">
         <li
           v-for="(message, index) of messages"
@@ -20,12 +20,12 @@
       </ul>
     </div>
 
-    <div
-      class="room__scroll-bottom"
-      @click="scrollBottom"
-    >
-      <ArrowDown/>
-    </div>
+<!--    <div-->
+<!--      class="room__scroll-bottom"-->
+<!--      @click="scrollBottom"-->
+<!--    >-->
+<!--      <ArrowDown/>-->
+<!--    </div>-->
 
     <div class="room__input-wrapper">
       <input @change="addImageToPreview" style="display: none" id="input" type="file" ref="fileInput">
@@ -49,9 +49,9 @@
 
     <div class="room__input-wrap">
       <div class="room__images-previews">
-        <div class="room__images-previews__item" v-for="(image, index) in imagesPreview" :key="index">
-          <img :src="image" alt=""/>
-          <div @click="removeImageFromPreviews(index)" class="room__images-previews__item__remove-btn">
+        <div class="room__images-previews__item" v-if="imagesPreview">
+          <img :src="imagesPreview" alt=""/>
+          <div @click="removeImageFromPreviews" class="room__images-previews__item__remove-btn">
             &#10006;
           </div>
         </div>
@@ -63,13 +63,13 @@
 <script>
   import socket from "@/socket";
   import { mapGetters } from 'vuex';
-  import ArrowDown from '../../assets/ArrowDown.vue';
+  // import ArrowDown from '../../assets/ArrowDown.vue';
   import Attach from "@/assets/Attach.vue";
 
   export default {
     name: "Room",
 
-    components: {Attach, ArrowDown },
+    components: {Attach},
 
     created() {
       socket.on('CHAT_MESSAGE', (data) => this.messages.push(data));
@@ -78,25 +78,25 @@
 
     data() {
       return {
-        imagesPreview: [],
+        imagesPreview: undefined,
         messages: [],
         message: ''
       }
     },
 
     methods: {
-      removeImageFromPreviews(index) {
-        this.imagesPreview.splice(index, 1);
+      removeImageFromPreviews() {
+        this.imagesPreview = undefined;
       },
 
       addImageToPreview(e) {
-        this.imagesPreview.push(URL.createObjectURL(e.target.files[0]));
+        this.imagesPreview = URL.createObjectURL(e.target.files[0]);
       },
 
       sendMessage() {
         this.encodeImageFileURL();
 
-        if (!this.imagesPreview.length && this.message) {
+        if (!this.imagesPreview && this.message) {
           socket.emit('CHAT_MESSAGE', {message: this.message, userName: this.USER_NAME});
           this.message = '';
         }
@@ -118,7 +118,7 @@
               src: srcData
             });
 
-            this.imagesPreview = [];
+            this.imagesPreview = undefined;
             this.message = "";
             this.$refs.fileInput.value = null;
           }).bind(this);
@@ -127,12 +127,34 @@
         }
       },
 
-      scrollBottom() {
-        this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
+      test() {
+        // console.log(this.$refs.messageArea.scrollTop, 'scrollTop');
+        console.log(this.$refs.messageArea.scrollHeight, 'scrollHeight');
       }
     },
 
-    computed: {...mapGetters(['USERS', 'USER_NAME'])}
+    computed: {...mapGetters(['USERS', 'USER_NAME'])},
+
+    watch: {
+      messages() {
+        // console.log(this.$refs.messageArea.scrollTop, 'scrollTop');
+        // console.log(this.$refs.messageArea.scrollHeight, 'scrollHeight');
+        // console.log(this.$refs.messageArea.scrollHeight - this.$refs.messageArea.scrollTop);
+        // console.log(this.$refs.messageArea.scrollTop)
+        // console.log(this.$refs.messageArea.scrollHeight)
+        // this.$nextTick(() => {
+        //   console.log(this.$refs.messageArea.scrollHeight)
+        //   this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
+        // });
+        setTimeout(() => {
+          this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
+        }, 0)
+
+
+        // console.log(this.$refs.messageArea.scrollTop, 'scrollTop after');
+        // console.log(this.$refs.messageArea.scrollHeight, 'scrollHeight after');
+      }
+    }
   }
 </script>
 
