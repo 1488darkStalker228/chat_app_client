@@ -26,7 +26,7 @@
     </v-app-bar>
 
     <v-main>
-      <Room/>
+     <Room/>
     </v-main>
   </v-app>
 </template>
@@ -37,22 +37,39 @@ import socket from "@/socket";
 import { mapGetters } from 'vuex';
 
 export default {
-  components: {
-    Room
-  },
+  components: {Room},
 
   created() {
-    if(!this.IS_AUTH) this.$router.push({name: 'join'});
+    const userName = this.generateUserName();
 
-    socket.on('JOINED', (data) => this.$store.dispatch({type: 'SET_USERS', payload: data}));
+    this.$store.commit({type: 'SET_USER_NAME', payload: userName});
 
-    socket.on('LEAVE', (data) => this.$store.dispatch({type: 'SET_USERS', payload: data}));
+    socket.emit('JOINED', userName);
+
+    socket.on('JOINED', (data) => this.$store.commit({type: 'SET_USERS_TO_STATE', payload: data}));
+
+    socket.on('LEAVE', (data) => this.$store.commit({type: 'SET_USERS_TO_STATE', payload: data}));
   },
 
-  data: () => ({drawer: null}),
+  data: () => ({
+    drawer: null
+  }),
+
+  methods: {
+    generateUserName() {
+      let abc = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+      let random = abc[Math.floor(Math.random() * abc.length)];
+      let newAbc = "";
+      while (newAbc.length < 6) {
+        newAbc += random;
+        random = abc[Math.floor(Math.random() * abc.length)];
+      }
+      return newAbc[0].toUpperCase() + newAbc.slice(1);
+    }
+  },
 
   computed: {
-    ...mapGetters(['IS_AUTH','USERS'])
+    ...mapGetters(['USERS'])
   }
 }
 </script>

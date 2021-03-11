@@ -1,11 +1,17 @@
 <template>
   <div id="app">
-    <router-view/>
+    <VuetifyLayout/>
   </div>
 </template>
 
 <script>
+  import VuetifyLayout from './components/VuetifyLayout.vue';
 
+  export default {
+    name: 'App',
+
+    components: {VuetifyLayout}
+  }
 </script>
 
 <style>

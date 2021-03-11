@@ -5,41 +5,21 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    isAuth: false,
     users: null,
     userName: null
   },
 
-  actions: {
-    IS_AUTH({ commit }, payload) {
-      commit('IS_AUTH_COMPLETE', payload.value);
-    },
-
-    SET_USERS({ commit }, payload) {
-      commit('SET_USER_TO_STATE', payload.payload);
-    },
-
-    GET_USER_NAME({ commit }, payload) {
-      commit('SET_USER_NAME', payload.payload);
-    }
-  },
-
   mutations: {
-    IS_AUTH_COMPLETE(state, payload) {
-      state.isAuth = payload;
-    },
-
-    SET_USER_TO_STATE(state, payload) {
-      state.users = payload;
+    SET_USERS_TO_STATE(state, payload) {
+      state.users = payload.payload;
     },
 
     SET_USER_NAME(state, payload) {
-      state.userName = payload;
+      state.userName = payload.payload;
     }
   },
 
   getters: {
-    IS_AUTH: state => state.isAuth,
     USERS: state => state.users,
     USER_NAME: state => state.userName
   }

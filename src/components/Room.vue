@@ -40,15 +40,13 @@
 
     created() {
       socket.on('CHAT_MESSAGE', (data) => {
-        console.log(data);
-        this.messages.push(data)
+        this.messages.push(data);
       });
 
       socket.on('CHAT_IMAGE', (data) => {
-        console.log(data);
         const image = document.createElement('img');
         image.src = data.img;
-        document.body.append(image);
+        this.$refs.messagesArea.append(image);
       });
     },
 
@@ -75,6 +73,7 @@
           }
           fileReader.readAsDataURL(fileSelect);
         }
+        this.$refs.fileInput.value = null;
       }
     },
 
@@ -91,7 +90,8 @@
     justify-content: space-between;
 
     &__messages {
-      height: 80vh;
+      height: 76vh;
+      margin-bottom: 16px;
       border: 1px solid;
       border-radius: 7px;
       overflow: auto;
@@ -111,7 +111,6 @@
     }
 
     &__message-input {
-      margin-top: 8px;
       flex-grow: 0;
     }
 
@@ -140,3 +139,8 @@
     }
   }
 </style>
+
+
+
+
+
