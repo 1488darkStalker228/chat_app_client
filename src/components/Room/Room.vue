@@ -1,14 +1,27 @@
 <template>
   <div class="room pa-3">
-    <div class="room__messages pa-7 scroll-style" ref="messageArea" @scroll="test">
+    <div
+      class="room__messages pa-7 scroll-style"
+      ref="messageArea"
+      @scroll="getScrollTop"
+    >
       <ul class="room__list">
         <li
           v-for="(message, index) of messages"
           :key="index"
           :class="message.userName === USER_NAME ? 'from-me' : 'from-them'"
+          @click="showDeleteButton(index)"
         >
-          <div>
+          <div class="room__message-text">
             {{message.userName}}: {{message.message}}
+          </div>
+          <div
+            class="room__message-delete"
+            @click="removeMessage(index)"
+            :class="message.userName === USER_NAME ? 'room__message-delete_me' : 'room__message-delete_them'"
+            ref="remove"
+          >
+            <Delete/>
           </div>
           <img
             class="room__img"
@@ -20,24 +33,31 @@
       </ul>
     </div>
 
-<!--    <div-->
-<!--      class="room__scroll-bottom"-->
-<!--      @click="scrollBottom"-->
-<!--    >-->
-<!--      <ArrowDown/>-->
-<!--    </div>-->
+    <div
+      class="room__scroll-bottom"
+      @click="scrollBottom"
+      :class="{'room__scroll-bottom_show' : isVisible}"
+    >
+     <ArrowDown/>
+    </div>
 
-    <div class="room__input-wrapper">
-      <input @change="addImageToPreview" style="display: none" id="input" type="file" ref="fileInput">
+    <div class="room__input-wrapper" style="display: none">
+      <input
+        @change="addImageToPreview"
+        style="display: none"
+        id="input"
+        type="file"
+        ref="fileInput"
+      >
       <label for="input">
         <Attach />
       </label>
-      <v-text-field
+      <v-text-field style="display: none"
           class="room__message-input"
           v-model="message"
           @click:append-outer="sendMessage"
           @keydown.enter="sendMessage"
-          :append-outer-icon="'mdi-send'"
+          append-icon="'mdi-send'"
           filled
           clear-icon="mdi-close-circle"
           clearable
@@ -47,11 +67,30 @@
       />
     </div>
 
-    <div class="room__input-wrap">
+    <v-textarea
+      style="max-height: 100px"
+      class="room__textarea"
+      append-outer-icon="mdi-send"
+      append-icon="mdi-paperclip"
+      v-model="message"
+      @click:append-outer="sendMessage"
+      label="Сообщение"
+      hide-details
+      rows="2"
+      no-resize
+    ></v-textarea>
+    
+    <div class="room__input-wrap" style="display: none">
       <div class="room__images-previews">
-        <div class="room__images-previews__item" v-if="imagesPreview">
+        <div
+          class="room__images-previews__item"
+          v-if="imagesPreview"
+        >
           <img :src="imagesPreview" alt=""/>
-          <div @click="removeImageFromPreviews" class="room__images-previews__item__remove-btn">
+          <div
+            @click="removeImageFromPreviews"
+            class="room__images-previews__item__remove-btn"
+          >
             &#10006;
           </div>
         </div>
@@ -63,13 +102,14 @@
 <script>
   import socket from "@/socket";
   import { mapGetters } from 'vuex';
-  // import ArrowDown from '../../assets/ArrowDown.vue';
+  import ArrowDown from '../../assets/ArrowDown.vue';
   import Attach from "@/assets/Attach.vue";
+  import Delete from '../../assets/Delete.vue';
 
   export default {
     name: "Room",
 
-    components: {Attach},
+    components: {Attach, ArrowDown, Delete},
 
     created() {
       socket.on('CHAT_MESSAGE', (data) => this.messages.push(data));
@@ -80,12 +120,15 @@
       return {
         imagesPreview: undefined,
         messages: [],
-        message: ''
+        message: '',
+        isVisible: false,
+        currentScrollTop: 0
       }
     },
 
     methods: {
       removeImageFromPreviews() {
+        this.$refs.fileInput.value = null;
         this.imagesPreview = undefined;
       },
 
@@ -127,9 +170,21 @@
         }
       },
 
-      test() {
-        // console.log(this.$refs.messageArea.scrollTop, 'scrollTop');
-        console.log(this.$refs.messageArea.scrollHeight, 'scrollHeight');
+      scrollBottom() {
+        this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
+      },
+
+      getScrollTop() {
+        if (this.currentScrollTop > this.$refs.messageArea.scrollTop + 200) this.isVisible = true;
+        else this.isVisible = false;
+      },
+
+      removeMessage(index) {
+        this.messages.splice(index, 1);
+      },
+
+      showDeleteButton(index) {
+        if (this.$refs.remove[index]) this.$refs.remove[index].classList.toggle('room__message-delete_show');
       }
     },
 
@@ -137,22 +192,10 @@
 
     watch: {
       messages() {
-        // console.log(this.$refs.messageArea.scrollTop, 'scrollTop');
-        // console.log(this.$refs.messageArea.scrollHeight, 'scrollHeight');
-        // console.log(this.$refs.messageArea.scrollHeight - this.$refs.messageArea.scrollTop);
-        // console.log(this.$refs.messageArea.scrollTop)
-        // console.log(this.$refs.messageArea.scrollHeight)
-        // this.$nextTick(() => {
-        //   console.log(this.$refs.messageArea.scrollHeight)
-        //   this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
-        // });
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
-        }, 0)
-
-
-        // console.log(this.$refs.messageArea.scrollTop, 'scrollTop after');
-        // console.log(this.$refs.messageArea.scrollHeight, 'scrollHeight after');
+          this.currentScrollTop = this.$refs.messageArea.scrollTop;
+        })
       }
     }
   }

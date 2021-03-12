@@ -2,15 +2,18 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  background: #f5f5f5;
 
   &__messages {
     position: relative;
-    height: 76vh;
-    margin-bottom: 16px;
-    border: 1px solid;
-    border-radius: 7px;
+    height: 74vh;
+    /* margin-bottom: 16px; */
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;    border-radius: 7px;
     overflow-y: scroll;
+    @media(max-width: 767px) {
+      height: 72vh;
+    }
   }
 
   &__list {
@@ -38,9 +41,11 @@
   }
 
   .from-me {
+    position: relative;
     color: white;
     background: #0B93F6;
     align-self: flex-end;
+    cursor: pointer;
     &:before {
       right: -7px;
       width: 20px;
@@ -50,7 +55,7 @@
     &:after {
       right: -26px;
       width: 26px;
-      background-color: white;
+      background-color: #f5f5f5;
       border-bottom-left-radius: 10px;
     }
   }
@@ -59,6 +64,7 @@
     background: #E5E5EA;
     color: black;
     align-self: flex-start;
+    cursor: pointer;
 
     &:before {
       left: -7px;
@@ -70,18 +76,45 @@
     &:after {
       left: -26px;
       width: 26px;
-      background-color: white;
+      background-color: #f5f5f5;
       border-bottom-right-radius: 10px;
+    }
+  }
+
+  &__message-delete {
+    display: none;
+    position: absolute;
+    top: -6px;
+    svg {
+      fill: red;
+    }
+    &_show {
+      display: block;
+    }
+    &_me {
+      right: -17px;
+    }
+    &_them {
+      left: -17px;
     }
   }
 
   &__img {
     max-width: 500px;
     max-height: 300px;
+
+    @media(max-width: 767px) {
+      max-height: 200px;
+      max-width: 230px;
+    }
   }
 
   &__message-input {
     flex-grow: 1;
+  }
+
+  &__textarea {
+    flex-grow: 0;
   }
 
   &__images-previews {
@@ -99,6 +132,10 @@
         border-radius: 10px;
         object-fit: cover;
         box-shadow: 0 0 6px rgba(0,0,0,0.26);
+        @media(max-width: 767px) {
+          width: 60px;
+          height: 60px;
+        }
       }
 
       &:not(:nth-child(1)) {
@@ -123,10 +160,7 @@
   }
 
   &__input-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 8px 0;
+    margin-top: 8px;
   }
 
   &__input-wrapper {
@@ -137,13 +171,21 @@
   }
 
   &__scroll-bottom {
+    align-self: center;
     position: absolute;
-    right: 45px;
-    bottom: 182px;
+    top: -50px;
+    opacity: 0;
+    transition: all 0.5s;
+
     svg {
       width: 50px;
       height: 50px;
       cursor: pointer;
+      fill:#0B93F6;
+    }
+    &_show {
+      opacity: 1;
+      top: 13px;
     }
   }
 

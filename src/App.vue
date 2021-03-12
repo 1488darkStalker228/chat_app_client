@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <v-app id="inspire">
-      <v-navigation-drawer v-model="drawer" app>
+      <v-navigation-drawer v-model="drawer" app class="nav">
         <v-list-item>
           <v-list-item-content class="pa-5">
             <v-list-item-title class="title">
@@ -15,8 +15,15 @@
         <v-list subheader>
           <v-list-item v-for="user of USERS" :key="user.id">
             <v-list-item-content>
-              <v-list-item-title>{{user.userName}}</v-list-item-title>
+              <v-list-item-title>
+                {{user.userName}}
+              </v-list-item-title>
             </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>
+                mdi-account
+              </v-icon>
+            </v-list-item-icon>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
@@ -43,10 +50,11 @@
 
     created() {
       const userName = this.generateUserName();
+      const userName1 = this.generateUserName();
 
-      this.$store.commit({type: 'SET_USER_NAME', payload: userName});
+      this.$store.commit({type: 'SET_USER_NAME', payload: `${userName} ${userName1}`});
 
-      socket.emit('JOINED', userName);
+      socket.emit('JOINED', `${userName} ${userName1}`);
 
       socket.on('JOINED', (data) => this.$store.commit({type: 'SET_USERS_TO_STATE', payload: data}));
 
@@ -60,10 +68,12 @@
         let abc = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
         let random = abc[Math.floor(Math.random() * abc.length)];
         let newAbc = "";
+
         while (newAbc.length < 6) {
           newAbc += random;
           random = abc[Math.floor(Math.random() * abc.length)];
         }
+
         return newAbc[0].toUpperCase() + newAbc.slice(1);
       }
     },
@@ -85,5 +95,8 @@
   }
   ul li {
     list-style: none;
+  }
+  .nav  {
+    background: #f5f5f5 !important;
   }
 </style>
