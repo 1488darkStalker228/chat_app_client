@@ -99,4 +99,7 @@
   .nav  {
     background: #f5f5f5 !important;
   }
+  img {
+    vertical-align: top;
+  }
 </style>

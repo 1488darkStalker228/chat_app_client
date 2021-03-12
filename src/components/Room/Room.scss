@@ -1,4 +1,5 @@
 .room {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -7,9 +8,10 @@
 
   &__messages {
     position: relative;
-    height: 74vh;
+    height: 78vh;
     /* margin-bottom: 16px; */
-    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;    border-radius: 7px;
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    border-radius: 7px;
     overflow-y: scroll;
     @media(max-width: 767px) {
       height: 72vh;
@@ -109,19 +111,13 @@
     }
   }
 
-  &__message-input {
-    flex-grow: 1;
-  }
-
   &__textarea {
     flex-grow: 0;
   }
 
   &__images-previews {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-left: 40px;
+    position: fixed;
+    bottom: 169px;
 
     &__item {
       position: relative;
@@ -136,10 +132,6 @@
           width: 60px;
           height: 60px;
         }
-      }
-
-      &:not(:nth-child(1)) {
-        margin-left: 10px;
       }
 
       &__remove-btn {
@@ -159,15 +151,11 @@
     }
   }
 
-  &__input-wrap {
-    margin-top: 8px;
-  }
-
   &__input-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
+    position: absolute;
+    right: 42px;
+    bottom: 86px;
+    z-index: 1;
   }
 
   &__scroll-bottom {
