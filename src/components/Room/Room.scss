@@ -3,13 +3,11 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; */
   background: #f5f5f5;
 
   &__messages {
     position: relative;
     height: 78vh;
-    /* margin-bottom: 16px; */
     box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
     border-radius: 7px;
     overflow-y: scroll;
@@ -48,6 +46,7 @@
     background: #0B93F6;
     align-self: flex-end;
     cursor: pointer;
+    white-space: pre-wrap;
     &:before {
       right: -7px;
       width: 20px;
@@ -158,6 +157,18 @@
     z-index: 1;
   }
 
+  &__sticker-wrapper {
+    position: fixed;
+    bottom: 169px;
+    box-shadow: 0 0 6px rgb(0 0 0 / 26%);
+    border-radius: 10px;
+    background: #f5f5f5;
+    padding: 20px;
+    img {
+      cursor: pointer;
+    }
+  }
+
   &__scroll-bottom {
     align-self: center;
     position: absolute;
@@ -165,15 +176,18 @@
     opacity: 0;
     transition: all 0.5s;
 
-    svg {
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      fill:#0B93F6;
-    }
+    //button {
+    //  width: 140px;
+    //  min-height: 35px;
+    //  border-radius: 20px;
+    //  font-size: 14px;
+    //  background: #0B93F6;
+    //  color: white;
+    //}
+
     &_show {
       opacity: 1;
-      top: 13px;
+      top: 40px;
     }
   }
 
