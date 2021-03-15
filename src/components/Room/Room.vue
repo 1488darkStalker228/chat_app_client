@@ -1,40 +1,33 @@
 <template>
   <div class="room pa-3">
-    <div
-      class="room__messages pa-7 scroll-style"
-      ref="messageArea"
-      @scroll="getScrollTop"
-    >
-      <div
-        class="room__delete-panel"
-        v-show="isVisibleDeletePanel"
-      >
-      <v-btn
-        @click="removeMessage"
-        color="primary"
-        elevation="3"
-        raised
-      >
-      Удалить
-      </v-btn>
+
+    <div class="room__subheader">
+      <h1 v-if="!isVisibleButtonDown && !isVisibleDeletePanel">Сообщения</h1>
+      <div class="room__delete-panel" :class="{'room__delete-panel_show' : isVisibleDeletePanel}">
+        <v-btn @click="removeMessage" color="primary" elevation="3" raised style="margin-right: 16px">
+          Удалить
+        </v-btn>
+        <v-btn @click="clearIndexState" color="primary" elevation="3" raised>
+          Отменить
+        </v-btn>
       </div>
+
+      <div class="room__scroll-bottom" @click="scrollBottom" :class="{'room__scroll-bottom_show' : isVisibleButtonDown}">
+        <v-btn color="primary" elevation="3" raised>
+          Вниз
+        </v-btn>
+      </div>
+    </div>
+
+    <div class="room__messages scroll-style pa-7" ref="messageArea" @scroll="getScrollTop">
       <ul class="room__list">
-        <li
-          v-for="(message, index) of messages"
-          :key="index"
-          :class="message.userName === USER_NAME ? 'from-me' : 'from-them'"
-          @click="addToDelete(index)"
-          ref="listItem"
-        >
-          <div class="room__message-text" ref="messageText">
-            {{message.userName}}: {{message.message}}
+        <li class="room__item" v-for="(message, index) of messages" :key="index" @click="toggleToDelete(index)" ref="listItem">
+          <div class="room__message-wrapper" :class="message.userName === USER_NAME ? 'from-me' : 'from-them'">
+            <div class="room__message-text" ref="messageText">
+              {{message.userName}}: {{message.message}}
+            </div>
+            <img class="room__img" alt="" :src="message.src" v-if="message.src"/>
           </div>
-          <img
-            class="room__img"
-            alt=""
-            :src="message.src"
-            v-if="message.src"
-          />
         </li>
       </ul>
 
@@ -45,42 +38,13 @@
         </div>
       </div>
 
-      <div
-          class="room__sticker-wrapper"
-          v-show="isVisibleStickers"
-      >
-        <img
-            v-for="(sticker, index) of stickers"
-            @click="sendSticker"
-            :key="index"
-            :src="require('../../assets/stickers/' + sticker)"
-            alt=""
-        >
+      <div class="room__sticker-wrapper" v-show="isVisibleStickers">
+        <img v-for="(sticker, index) of stickers" @click="sendSticker" :key="index" :src="require('../../assets/stickers/' + sticker)" alt="">
       </div>
     </div>
 
-    <div
-        class="room__scroll-bottom"
-        @click="scrollBottom"
-        :class="{'room__scroll-bottom_show' : isVisibleButtonDown}"
-    >
-      <v-btn
-        color="primary"
-        elevation="3"
-        raised
-      >
-      Вниз
-      </v-btn>
-    </div>
-
     <div class="room__input-wrapper">
-      <input
-        @change="addImageToPreview"
-        style="display: none"
-        id="input"
-        type="file"
-        ref="fileInput"
-      >
+      <input @change="addImageToPreview" style="display: none" id="input" type="file" ref="fileInput">
       <label for="input">
         <Attach/>
       </label>
@@ -96,7 +60,7 @@
       prepend-inner-icon="mdi-sticker-plus"
       label="Сообщение"
       hide-details
-      rows="4"
+      rows="3"
       no-resize
     />
     <!-- @keydown="sendMessage"
@@ -130,7 +94,7 @@
         imagesPreview: undefined,
         isVisibleButtonDown: false,
         isVisibleStickers: false,
-        isVisibleDeletePanel: true,
+        isVisibleDeletePanel: false,
         currentScrollTop: 0,
         stickers: [
           '12669-150x150.png',
@@ -139,7 +103,7 @@
           '12673-150x150.png',
           '12674-150x150.png'
         ],
-        indexes: new Set()
+        indexes: []
       }
     },
 
@@ -224,20 +188,32 @@
       },
 
       removeMessage() {
-        const arrayFromSet = Array.from(this.indexes);
-        arrayFromSet.sort((a, b) => a - b);
+        const sort = this.indexes.sort((a, b) => a - b);
 
-        while(arrayFromSet.length) {
-          this.messages.splice(arrayFromSet.pop(), 1);
+        while(sort.length) {
+          this.messages.splice(sort.pop(), 1);
         }
-
-        this.indexes.clear();
+        this.clearIndexState();
       },
 
-      addToDelete(index) {
-        this.indexes.add(index);
-        this.$refs.listItem[index].classList.toggle('active')
-     },
+      toggleToDelete(index) {
+        this.isVisibleDeletePanel = true;
+
+        const findIndex = this.indexes.find(item => item === index);
+        if (findIndex !== undefined) {
+          this.indexes = this.indexes.filter(item => item !== findIndex);
+          this.indexes.length === 0 ? this.isVisibleDeletePanel = false: '';
+        } 
+        else this.indexes.push(index);
+  
+        this.$refs.listItem[index].classList.toggle('room__item_active');
+      },
+
+      clearIndexState() {
+        this.isVisibleDeletePanel = false;
+        this.$refs.listItem.forEach(item => item.classList.remove('room__item_active'));
+        this.indexes = [];
+      },
 
       addImageToPreview(e) {
         this.imagesPreview = URL.createObjectURL(e.target.files[0]);
@@ -252,9 +228,9 @@
     computed: {...mapGetters(['USERS', 'USER_NAME'])},
 
     watch: {
-      isShift() {
+/*       isShift() {
         console.log(this.isShift);
-      },
+      }, */
       messages() {
         this.$nextTick(() => {
           this.$refs.messageArea.scrollTop = this.$refs.messageArea.scrollHeight;
