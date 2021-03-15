@@ -5,23 +5,29 @@
       ref="messageArea"
       @scroll="getScrollTop"
     >
+      <div
+        class="room__delete-panel"
+        v-show="isVisibleDeletePanel"
+      >
+      <v-btn
+        @click="removeMessage"
+        color="primary"
+        elevation="3"
+        raised
+      >
+      Удалить
+      </v-btn>
+      </div>
       <ul class="room__list">
         <li
           v-for="(message, index) of messages"
           :key="index"
           :class="message.userName === USER_NAME ? 'from-me' : 'from-them'"
-          @click="showDeleteButton(index)"
+          @click="addToDelete(index)"
+          ref="listItem"
         >
           <div class="room__message-text" ref="messageText">
             {{message.userName}}: {{message.message}}
-          </div>
-          <div
-            class="room__message-delete"
-            @click="removeMessage(index)"
-            :class="message.userName === USER_NAME ? 'room__message-delete_me' : 'room__message-delete_them'"
-            ref="remove"
-          >
-            <Delete/>
           </div>
           <img
             class="room__img"
@@ -59,10 +65,12 @@
         :class="{'room__scroll-bottom_show' : isVisibleButtonDown}"
     >
       <v-btn
-          color="primary"
-          elevation="3"
-          raised
-      >Вниз</v-btn>
+        color="primary"
+        elevation="3"
+        raised
+      >
+      Вниз
+      </v-btn>
     </div>
 
     <div class="room__input-wrapper">
@@ -83,8 +91,7 @@
       v-model="message"
       @click:append-outer="sendMessage"
       @click:prepend-inner="isVisibleStickers = !isVisibleStickers"
-      @keydown="sendMessage"
-      @keyup="sendMessage"
+      @keydown.enter.prevent="sendMessage"
       append-outer-icon="mdi-send"
       prepend-inner-icon="mdi-sticker-plus"
       label="Сообщение"
@@ -92,6 +99,8 @@
       rows="4"
       no-resize
     />
+    <!-- @keydown="sendMessage"
+    @keyup="sendMessage" -->
   </div>
 </template>
 
@@ -99,12 +108,11 @@
   import socket from "@/socket";
   import { mapGetters } from 'vuex';
   import Attach from "@/assets/Attach.vue";
-  import Delete from '../../assets/Delete.vue';
 
   export default {
     name: "Room",
 
-    components: {Attach, Delete},
+    components: {Attach},
 
     created() {
       socket.on('SEND_MESSAGE', (data) => this.messages.push(data));
@@ -122,6 +130,7 @@
         imagesPreview: undefined,
         isVisibleButtonDown: false,
         isVisibleStickers: false,
+        isVisibleDeletePanel: true,
         currentScrollTop: 0,
         stickers: [
           '12669-150x150.png',
@@ -129,21 +138,24 @@
           '12671-150x150.png',
           '12673-150x150.png',
           '12674-150x150.png'
-        ]
+        ],
+        indexes: new Set()
       }
     },
 
     methods: {
-      sendMessage(e) {
-        if(e.key === 'Shift') {
+      sendMessage() {
+        /* 
+        if (e.key === 'Shift') {
           this.isShift = e.type !== 'keyup';
           return;
         }
-        if(e.type === 'keydown' && e.key === 'Enter' && this.isShift) {
+        if (e.type === 'keydown' && e.key === 'Enter' && this.isShift) {
           return;
         }
-        if(e.type === 'keydown' && e.key === 'Enter' && !this.isShift) {
+        if (e.type === 'keydown' && e.key === 'Enter' && !this.isShift) {
           e.preventDefault();
+          this.sendImage();
           if (!this.imagesPreview && this.message.trim()) {
             socket.emit('SEND_MESSAGE', {
               message: this.message,
@@ -151,6 +163,15 @@
             });
             this.message = '';
           }
+        }
+        */
+        this.sendImage();
+        if (!this.imagesPreview && this.message) {
+          socket.emit('SEND_MESSAGE', {
+            message: this.message,
+            userName: this.USER_NAME
+          });
+          this.message = '';
         }
       },
 
@@ -161,6 +182,12 @@
           src: e.target.src
         });
         this.isVisibleStickers = false;
+      },
+
+      hideStickers(e) {
+        if(!e.target.closest('room__sticker-wrapper')) {
+          this.isVisibleStickers = false;
+        }
       },
 
       sendImage() {
@@ -196,13 +223,21 @@
         this.isVisibleButtonDown = this.currentScrollTop > this.$refs.messageArea.scrollTop + 200;
       },
 
-      removeMessage(index) {
-        this.messages.splice(index, 1);
+      removeMessage() {
+        const arrayFromSet = Array.from(this.indexes);
+        arrayFromSet.sort((a, b) => a - b);
+
+        while(arrayFromSet.length) {
+          this.messages.splice(arrayFromSet.pop(), 1);
+        }
+
+        this.indexes.clear();
       },
 
-      showDeleteButton(index) {
-        if (this.$refs.remove[index]) this.$refs.remove[index].classList.toggle('room__message-delete_show');
-      },
+      addToDelete(index) {
+        this.indexes.add(index);
+        this.$refs.listItem[index].classList.toggle('active')
+     },
 
       addImageToPreview(e) {
         this.imagesPreview = URL.createObjectURL(e.target.files[0]);
@@ -226,6 +261,14 @@
           this.currentScrollTop = this.$refs.messageArea.scrollTop;
         });
       }
+    },
+
+    mounted() {
+      window.addEventListener('click', this.hideStickers);
+    },
+
+    beforeDestroy() {
+      window.removeEventListener('click', this.hideStickers);
     }
   }
 </script>
